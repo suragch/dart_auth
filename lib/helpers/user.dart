@@ -12,8 +12,8 @@ class User {
   }
 
   int id;
-  final String email;
-  final String password;
+  String email;
+  String password;
 
   Map<String, dynamic> toJson() {
     return {
