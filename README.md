@@ -2,7 +2,7 @@
 
 ## Tutorial
 
-This project is the supplemental code for the tutorial [Authentication with Server Side Dart](TODO). The sections of the tutorial correspond to the branches of this repository.
+This project is the supplemental code for the tutorial Authentication with Server Side Dart. The sections of the tutorial correspond to the branches of this repository.
 
 - Basic authentication
 - Basic authentication plus security enhancements
