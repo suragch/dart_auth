@@ -2,7 +2,7 @@ import 'package:dart_auth/controllers/signup.dart';
 import 'package:dart_auth/controllers/restricted.dart';
 import 'dart_auth.dart';
 
-class BasicChannel extends ApplicationChannel {
+class DartAuthChannel extends ApplicationChannel {
 
   @override
   Future prepare() async {
