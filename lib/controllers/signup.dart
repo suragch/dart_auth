@@ -5,10 +5,13 @@ import 'package:aqueduct/aqueduct.dart';
 import 'package:dart_auth/helpers/user.dart';
 import 'package:dart_auth/helpers/database.dart';
 import 'package:string_validator/string_validator.dart';
+import 'package:jaguar_jwt/jaguar_jwt.dart';
+import 'package:dart_auth/helpers/config.dart';
 
 class SignupController extends ResourceController {
   @Operation.post()
   Future<Response> signup() async {
+    
     // get user info from request body
     final map = await request.body.decode<Map<String, dynamic>>();
     final User user = User.fromJson(map);
@@ -31,8 +34,11 @@ class SignupController extends ResourceController {
     // add user to database
     user.id = database.addUser(user);
 
-    // send a response
-    return Response.ok('user added');
+    // get the token
+    final String token = _signToken(user);
+    
+    // send the token back to the user
+    return Response.ok(token);
   }
 
   bool _isValid(User user) {
@@ -55,5 +61,17 @@ class SignupController extends ResourceController {
     final hash = sha256.convert(bytes);
     // store the salt with the hash
     return '$salt.$hash';
+  }
+
+  // creates a JWT with the user ID, expires in 12 hours
+  String _signToken(User user) {
+    final claimSet = JwtClaim(
+      issuer: 'Dart Server',
+      subject: '${user.id}',
+      issuedAt: DateTime.now(),
+      maxAge: const Duration(hours: 12)
+    );
+    const String secret = Properties.jwtSecret;
+    return issueJwtHS256(claimSet, secret);
   }
 }

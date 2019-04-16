@@ -1,15 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
 import 'package:aqueduct/aqueduct.dart';
-import 'package:dart_auth/helpers/user.dart';
-import 'package:dart_auth/helpers/database.dart';
+import 'package:jaguar_jwt/jaguar_jwt.dart';
+import 'package:dart_auth/helpers/config.dart';
 
 class RestrictedController extends ResourceController {
   @Operation.get()
   Future<Response> restricted(
       @Bind.header("authorization") String authHeader) async {
-    // only allow with correct username and password
+    // only allow requests with valid tokens
     if (!_isAuthorized(authHeader)) {
       return Response.forbidden();
     }
@@ -22,39 +20,20 @@ class RestrictedController extends ResourceController {
   // parse the auth header
   bool _isAuthorized(String authHeader) {
     final parts = authHeader.split(' ');
-    if (parts == null || parts.length != 2 || parts[0] != 'Basic') {
+    if (parts == null || parts.length != 2 || parts[0] != 'Bearer') {
       return false;
     }
-    return _isValidUsernameAndPassword(parts[1]);
+    return _isValidToken(parts[1]);
   }
 
-  // check username and password
-  bool _isValidUsernameAndPassword(String credentials) {
-    // this user
-    final String decoded = utf8.decode(base64.decode(credentials));
-    final parts = decoded.split(':');
-    final User user = User(parts[0], parts[1]);
-
-    // database user
-    final Database database = MockDatabase();
-    final User foundUser = database.queryEmail(user.email);
-
-    // check for match
-    return foundUser != null &&
-        _passwordHashMatches(foundUser.password, user.password);
-  }
-
-  bool _passwordHashMatches(String saltHash, String password) {
-    // previously saved password hash
-    final parts = saltHash.split('.');
-    final salt = parts[0];
-    final savedHash = parts[1];
-
-    // user submitted password hash
-    final saltedPassword = salt + password;
-    final bytes = utf8.encode(saltedPassword);
-    final newHash = sha256.convert(bytes).toString();
-
-    return savedHash == newHash;
+  bool _isValidToken(String token) {
+    const key = Properties.jwtSecret;
+    try {
+      verifyJwtHS256Signature(token, key);
+      return true;
+    } on JwtException {
+      print('invalid token');
+    }
+    return false;
   }
 }

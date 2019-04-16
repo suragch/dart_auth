@@ -9,6 +9,7 @@ environment:
 dependencies:
   aqueduct: ^3.0.0
   string_validator: ^0.1.3
+  jaguar_jwt: ^2.1.6
 
 dev_dependencies:
   test: ^1.0.0
