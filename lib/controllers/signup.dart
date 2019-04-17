@@ -19,7 +19,7 @@ class SignupController extends ResourceController {
     }
 
     // add user to database
-    user.id = database.addUser(user);
+    database.addUser(user);
     
     // send a response 
     return Response.ok('user added');
