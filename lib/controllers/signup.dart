@@ -29,7 +29,7 @@ class SignupController extends ResourceController {
     user.password = _hashPassword(user.password);
 
     // add user to database
-    user.id = database.addUser(user);
+    database.addUser(user);
 
     // send a response
     return Response.ok('user added');
