@@ -4,9 +4,9 @@
 
 This project is the supplemental code for the tutorial Authentication with Server Side Dart. The sections of the tutorial correspond to the branches of this repository.
 
-- Basic authentication
-- Basic authentication plus security enhancements
-- Token based authentication
+- [Basic authentication](https://github.com/suragch/dart_auth/tree/basic)
+- [Basic authentication plus security enhancements](https://github.com/suragch/dart_auth/tree/basic_plus)
+- [Token based authentication](https://github.com/suragch/dart_auth)
 
 ## Running the Application Locally
 
