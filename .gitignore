@@ -12,3 +12,4 @@ Dart_Packages.xml
 .DS_Store
 .idea/
 *.aqueduct.pid
+config.dart
