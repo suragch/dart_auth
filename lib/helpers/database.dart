@@ -17,8 +17,10 @@ class MockDatabase implements Database {
 
   @override
   int addUser(User user) {
+    final id = _users.length;
+    user.id = id;
     _users.add(user);
-    return _users.length - 1;
+    return id;
   }
 
   @override

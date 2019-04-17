@@ -11,16 +11,16 @@ class SigninController extends ResourceController {
   @Operation.post()
   Future<Response> signin(
       @Bind.header("authorization") String authHeader) async {
-    
     final user = parseUser(authHeader);
 
     // only allow with correct username and password
-    if (!_isValidUsernameAndPassword(user)) {
+    final userId = _validateUser(user);
+    if (userId < 0) {
       return Response.unauthorized();
     }
 
     // get the token
-    final String token = _signToken(user);
+    final String token = _signToken(userId);
 
     // send the token back to the user
     return Response.ok(token);
@@ -38,15 +38,19 @@ User parseUser(String authHeader) {
   return User(credentials[0], credentials[1]);
 }
 
-// check username and password
-bool _isValidUsernameAndPassword(User user) {
+/// if username and password exist return id, else return -1
+int _validateUser(User user) {
+  const invalidUser = -1;
   if (user == null) {
-    return false;
+    return invalidUser;
   }
   final Database database = MockDatabase();
   final User foundUser = database.queryEmail(user.email);
-  return foundUser != null &&
-      _passwordHashMatches(foundUser.password, user.password);
+  if (foundUser != null &&
+      _passwordHashMatches(foundUser.password, user.password)) {
+    return foundUser.id;
+  }
+  return invalidUser;
 }
 
 bool _passwordHashMatches(String saltHash, String password) {
@@ -63,10 +67,10 @@ bool _passwordHashMatches(String saltHash, String password) {
   return savedHash == newHash;
 }
 
-String _signToken(User user) {
+String _signToken(int userId) {
   final claimSet = JwtClaim(
       issuer: 'Dart Server',
-      subject: '${user.id}',
+      subject: '$userId',
       issuedAt: DateTime.now(),
       maxAge: const Duration(hours: 12));
   const String secret = Properties.jwtSecret;
