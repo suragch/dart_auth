@@ -26,6 +26,7 @@ class RestrictedController extends ResourceController {
     return _isValidToken(parts[1]);
   }
 
+  // verify the token
   bool _isValidToken(String token) {
     const key = Properties.jwtSecret;
     try {

@@ -35,7 +35,7 @@ class SignupController extends ResourceController {
     database.addUser(user);
 
     // get the token
-    final String token = _signToken(user);
+    final String token = _signToken(user.id);
     
     // send the token back to the user
     return Response.ok(token);
@@ -64,10 +64,10 @@ class SignupController extends ResourceController {
   }
 
   // creates a JWT with the user ID, expires in 12 hours
-  String _signToken(User user) {
+  String _signToken(int userId) {
     final claimSet = JwtClaim(
       issuer: 'Dart Server',
-      subject: '${user.id}',
+      subject: '$userId',
       issuedAt: DateTime.now(),
       maxAge: const Duration(hours: 12)
     );
